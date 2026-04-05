@@ -36,6 +36,18 @@ export interface FirRecord {
   createdAt: string;
 }
 
+export interface FirDetailRecord extends FirRecord {
+  createdByName: string | null;
+  createdByRole: AppRole | null;
+  createdByBadgeNumber: string | null;
+  createdByStationName: string | null;
+  assignedOfficerEmail: string | null;
+  assignedOfficerBadgeNumber: string | null;
+  assignedOfficerStationName: string | null;
+  relatedCases: CaseRecord[];
+  activity: AuditLogRecord[];
+}
+
 export interface CriminalRecord {
   id: string;
   suspectName: string;
@@ -58,6 +70,23 @@ export interface CaseRecord {
   leadOfficerName: string | null;
   notesCount: number;
   createdAt: string;
+}
+
+export interface CaseNoteRecord {
+  id: string;
+  note: string;
+  createdAt: string;
+  createdByName: string | null;
+}
+
+export interface CaseDetailRecord extends CaseRecord {
+  firId: string | null;
+  summary: string;
+  leadOfficerEmail: string | null;
+  leadOfficerBadgeNumber: string | null;
+  leadOfficerStationName: string | null;
+  notes: CaseNoteRecord[];
+  activity: AuditLogRecord[];
 }
 
 export interface AuditLogRecord {

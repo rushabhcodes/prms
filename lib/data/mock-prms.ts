@@ -1,5 +1,7 @@
 import type {
   AuditLogRecord,
+  CaseDetailRecord,
+  CaseNoteRecord,
   CaseRecord,
   CriminalRecord,
   DashboardMetrics,
@@ -188,6 +190,27 @@ export const mockCases: CaseRecord[] = [
   },
 ];
 
+export const mockCaseNotes: CaseNoteRecord[] = [
+  {
+    id: "n1111111-1111-4111-8111-111111111111",
+    note: "Assigned two field teams to collect CCTV footage from the warehouse perimeter.",
+    createdAt: "2026-03-31T09:35:00.000Z",
+    createdByName: mockUsers[1].fullName,
+  },
+  {
+    id: "n2222222-2222-4222-8222-222222222222",
+    note: "Requested telecom metadata and flagged linked beneficiary accounts for review.",
+    createdAt: "2026-04-01T14:20:00.000Z",
+    createdByName: mockUsers[1].fullName,
+  },
+  {
+    id: "n3333333-3333-4333-8333-333333333333",
+    note: "Closure memo prepared and shared with the insurance liaison desk.",
+    createdAt: "2026-03-15T10:50:00.000Z",
+    createdByName: mockUsers[0].fullName,
+  },
+];
+
 export const mockAuditLogs: AuditLogRecord[] = [
   {
     id: 1,
@@ -226,6 +249,43 @@ export const mockAuditLogs: AuditLogRecord[] = [
     createdAt: "2026-03-31T09:35:00.000Z",
   },
 ];
+
+export function getMockCaseByNumber(caseNumber: string): CaseDetailRecord | null {
+  const caseItem = mockCases.find((item) => item.caseNumber === caseNumber);
+
+  if (!caseItem) {
+    return null;
+  }
+
+  const fir = caseItem.firNumber
+    ? mockFirs.find((item) => item.firNumber === caseItem.firNumber) ?? null
+    : null;
+  const leadOfficer = mockUsers.find((user) => user.fullName === caseItem.leadOfficerName) ?? null;
+  const notesByCase: Record<string, CaseNoteRecord[]> = {
+    "CASE-2026-045": [mockCaseNotes[0]],
+    "CASE-2026-051": [mockCaseNotes[1]],
+    "CASE-2026-022": [mockCaseNotes[2]],
+  };
+  const notes = notesByCase[caseItem.caseNumber] ?? [];
+  const activity = mockAuditLogs
+    .filter(
+      (entry) =>
+        (entry.entityType === "cases" && entry.entityId === caseItem.id) ||
+        (fir && entry.entityType === "firs" && entry.entityId === fir.id),
+    )
+    .sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+
+  return {
+    ...caseItem,
+    firId: fir?.id ?? null,
+    summary: caseItem.summary,
+    leadOfficerEmail: leadOfficer?.email ?? null,
+    leadOfficerBadgeNumber: leadOfficer?.badgeNumber ?? null,
+    leadOfficerStationName: leadOfficer?.stationName ?? null,
+    notes,
+    activity,
+  };
+}
 
 export const mockMetrics: DashboardMetrics = {
   totalFirs: mockFirs.length,

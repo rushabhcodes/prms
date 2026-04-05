@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { canManageUsers } from "@/lib/auth/access";
@@ -81,8 +82,15 @@ export default async function DashboardPage() {
                   <TableRow key={fir.id}>
                     <TableCell>
                       <div>
-                        <p className="font-medium">{fir.firNumber}</p>
-                        <p className="text-sm text-[color:var(--muted-foreground)]">{fir.title}</p>
+                        <Link
+                          href={`/firs/${encodeURIComponent(fir.firNumber)}`}
+                          className="font-medium text-slate-950 transition-colors hover:text-[color:var(--primary)]"
+                        >
+                          {fir.firNumber}
+                        </Link>
+                        <p className="text-sm text-[color:var(--muted-foreground)]">
+                          {fir.title}
+                        </p>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -125,7 +133,12 @@ export default async function DashboardPage() {
               {cases.slice(0, 4).map((caseItem) => (
                 <div key={caseItem.id} className="flex items-center justify-between gap-3 rounded-2xl bg-[color:var(--secondary)]/60 p-4">
                   <div>
-                    <p className="font-medium">{caseItem.caseNumber}</p>
+                    <Link
+                      href={`/cases/${encodeURIComponent(caseItem.caseNumber)}`}
+                      className="font-medium text-slate-950 transition-colors hover:text-[color:var(--primary)]"
+                    >
+                      {caseItem.caseNumber}
+                    </Link>
                     <p className="text-sm text-[color:var(--muted-foreground)]">
                       {caseItem.title}
                     </p>

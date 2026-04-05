@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -74,28 +75,38 @@ export function CasesView({
       <Card>
         <CardContent className="p-0">
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Case</TableHead>
-                <TableHead>FIR linkage</TableHead>
-                <TableHead>Priority</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Lead officer</TableHead>
-                <TableHead>Notes</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Case</TableHead>
+                  <TableHead>FIR linkage</TableHead>
+                  <TableHead>Priority</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Lead officer</TableHead>
+                  <TableHead>Notes</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
             <TableBody>
-              {cases.map((caseItem) => (
-                <TableRow key={caseItem.id}>
-                  <TableCell>
-                    <div>
-                      <p className="font-medium">{caseItem.caseNumber}</p>
-                      <p className="text-sm text-[color:var(--muted-foreground)]">
-                        {caseItem.title}
-                      </p>
-                    </div>
-                  </TableCell>
+                {cases.map((caseItem) => (
+                  <TableRow key={caseItem.id}>
+                    <TableCell>
+                      <div>
+                        <Link
+                          href={`/cases/${encodeURIComponent(caseItem.caseNumber)}`}
+                          className="font-medium text-slate-950 transition-colors hover:text-[color:var(--primary)]"
+                        >
+                          {caseItem.caseNumber}
+                        </Link>
+                        <p className="text-sm text-[color:var(--muted-foreground)]">
+                          <Link
+                            href={`/cases/${encodeURIComponent(caseItem.caseNumber)}`}
+                            className="transition-colors hover:text-[color:var(--foreground)]"
+                          >
+                            {caseItem.title}
+                          </Link>
+                        </p>
+                      </div>
+                    </TableCell>
                   <TableCell>{caseItem.firNumber ?? "Standalone case"}</TableCell>
                   <TableCell>
                     <CasePriorityBadge priority={caseItem.priority} />
@@ -113,20 +124,27 @@ export function CasesView({
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
-                    {canWrite ? (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setSelectedCase(caseItem)}
-                      >
-                        <PlusCircle className="h-4 w-4" />
-                        Add note
+                    <div className="flex justify-end gap-2">
+                      <Button variant="outline" size="sm" asChild>
+                        <Link href={`/cases/${encodeURIComponent(caseItem.caseNumber)}`}>
+                          View details
+                        </Link>
                       </Button>
-                    ) : (
-                      <span className="text-sm text-[color:var(--muted-foreground)]">
-                        Read-only
-                      </span>
-                    )}
+                      {canWrite ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSelectedCase(caseItem)}
+                        >
+                          <PlusCircle className="h-4 w-4" />
+                          Add note
+                        </Button>
+                      ) : (
+                        <span className="self-center text-sm text-[color:var(--muted-foreground)]">
+                          Read-only
+                        </span>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

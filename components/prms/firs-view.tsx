@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -203,15 +204,28 @@ export function FirsView({
                   <TableHead>Status</TableHead>
                   <TableHead>Assigned officer</TableHead>
                   <TableHead>Filed on</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {firs.map((fir) => (
                   <TableRow key={fir.id}>
-                    <TableCell className="font-medium text-slate-950">{fir.firNumber}</TableCell>
+                    <TableCell>
+                      <Link
+                        href={`/firs/${encodeURIComponent(fir.firNumber)}`}
+                        className="font-medium text-slate-950 transition-colors hover:text-[color:var(--primary)]"
+                      >
+                        {fir.firNumber}
+                      </Link>
+                    </TableCell>
                     <TableCell>
                       <div>
-                        <p className="font-medium">{fir.title}</p>
+                        <Link
+                          href={`/firs/${encodeURIComponent(fir.firNumber)}`}
+                          className="font-medium text-slate-950 transition-colors hover:text-[color:var(--primary)]"
+                        >
+                          {fir.title}
+                        </Link>
                         <p className="max-w-md text-sm text-[color:var(--muted-foreground)]">
                           {fir.location} • {fir.complainantName}
                         </p>
@@ -248,6 +262,13 @@ export function FirsView({
                     </TableCell>
                     <TableCell>{fir.assignedOfficerName ?? "Unassigned"}</TableCell>
                     <TableCell>{formatDate(fir.createdAt)}</TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="outline" size="sm" asChild>
+                        <Link href={`/firs/${encodeURIComponent(fir.firNumber)}`}>
+                          View details
+                        </Link>
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

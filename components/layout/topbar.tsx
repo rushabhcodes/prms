@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { Bell, ChevronDown, History } from "lucide-react";
+import { ChevronDown, History } from "lucide-react";
 
 import { canViewAuditLogs } from "@/lib/auth/access";
 import { SignOutMenuItem } from "@/components/layout/sign-out-menu-item";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,9 +41,7 @@ export function Topbar({
           </div>
 
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="icon" className="hidden sm:inline-flex">
-              <Bell className="h-4 w-4" />
-            </Button>
+            <ThemeToggle />
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
