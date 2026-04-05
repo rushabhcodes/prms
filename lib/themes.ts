@@ -1,5 +1,7 @@
 export const themeStorageKey = "prms-theme";
 export const defaultTheme = "command-teal";
+export const modeStorageKey = "prms-mode";
+export const defaultMode = "light";
 
 export const themeOptions = [
   {
@@ -53,7 +55,12 @@ export const themeOptions = [
 ] as const;
 
 export type ThemeName = (typeof themeOptions)[number]["value"];
+export type ColorMode = "light" | "dark";
 
 export function isThemeName(value: string | null | undefined): value is ThemeName {
   return themeOptions.some((theme) => theme.value === value);
+}
+
+export function isColorMode(value: string | null | undefined): value is ColorMode {
+  return value === "light" || value === "dark";
 }

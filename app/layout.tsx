@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { AppToaster } from "@/components/ui/toaster";
-import { defaultTheme, themeStorageKey } from "@/lib/themes";
+import {
+  defaultMode,
+  defaultTheme,
+  modeStorageKey,
+  themeStorageKey,
+} from "@/lib/themes";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -20,7 +25,7 @@ export default function RootLayout({
       <body className="min-h-full bg-[color:var(--background)] text-[color:var(--foreground)]">
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var stored=window.localStorage.getItem(${JSON.stringify(themeStorageKey)});document.documentElement.dataset.theme=stored||${JSON.stringify(defaultTheme)};}catch(e){document.documentElement.dataset.theme=${JSON.stringify(defaultTheme)};}`,
+            __html: `try{var storedTheme=window.localStorage.getItem(${JSON.stringify(themeStorageKey)});var storedMode=window.localStorage.getItem(${JSON.stringify(modeStorageKey)});document.documentElement.dataset.theme=storedTheme||${JSON.stringify(defaultTheme)};document.documentElement.dataset.mode=storedMode||((window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":${JSON.stringify(defaultMode)});}catch(e){document.documentElement.dataset.theme=${JSON.stringify(defaultTheme)};document.documentElement.dataset.mode=${JSON.stringify(defaultMode)};}`,
           }}
         />
         <ThemeProvider>

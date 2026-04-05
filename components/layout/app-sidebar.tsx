@@ -27,13 +27,13 @@ export function AppSidebar({
   );
 
   return (
-    <aside className="hidden min-h-screen border-r border-white/60 bg-[color:var(--sidebar)]/95 px-5 py-6 backdrop-blur-xl lg:flex lg:flex-col">
-      <Link href="/dashboard" className="rounded-2xl border border-white/70 bg-white/75 p-5 shadow-sm">
+    <aside className="hidden min-h-screen border-r border-[color:var(--border)] bg-[color:var(--sidebar)] px-5 py-6 backdrop-blur-xl lg:flex lg:flex-col">
+      <Link href="/dashboard" className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--card)] p-5 shadow-sm">
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[color:var(--primary)]">
           PRMS
         </p>
         <div className="mt-3 space-y-1">
-          <h2 className="font-heading text-2xl font-semibold tracking-tight text-slate-950">
+          <h2 className="font-heading text-2xl font-semibold tracking-tight text-[color:var(--foreground)]">
             Police Records
           </h2>
           <p className="text-sm text-[color:var(--muted-foreground)]">
@@ -55,7 +55,7 @@ export function AppSidebar({
                 "group flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-all",
                 isActive
                   ? "bg-[color:var(--primary)] text-[color:var(--primary-foreground)] shadow-[0_18px_30px_-20px_rgba(15,118,110,0.95)]"
-                  : "text-slate-700 hover:bg-white/80 hover:text-slate-950",
+                  : "text-slate-700 hover:bg-[color:var(--card)] hover:text-[color:var(--foreground)]",
               )}
             >
               <span
@@ -63,7 +63,7 @@ export function AppSidebar({
                   "flex h-8 w-8 items-center justify-center rounded-xl transition-colors",
                   isActive
                     ? "bg-white/14 text-[color:var(--primary-foreground)]"
-                    : "bg-white/65 text-slate-600 group-hover:bg-white group-hover:text-[color:var(--primary)]",
+                    : "bg-[color:var(--card)] text-slate-600 group-hover:bg-[color:var(--card)] group-hover:text-[color:var(--primary)]",
                 )}
               >
                 <Icon className="h-4 w-4" />

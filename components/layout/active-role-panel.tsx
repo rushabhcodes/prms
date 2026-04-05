@@ -14,8 +14,8 @@ export function ActiveRolePanel({
     <div
       className={
         compact
-          ? "flex items-center justify-between gap-3 rounded-2xl border border-white/80 bg-white/80 px-4 py-3 shadow-sm"
-          : "rounded-2xl border border-white/80 bg-white/85 p-4 shadow-sm"
+          ? "flex items-center justify-between gap-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--card)] px-4 py-3 shadow-sm"
+          : "rounded-2xl border border-[color:var(--border)] bg-[color:var(--card)] p-4 shadow-sm"
       }
     >
       <div className="flex items-start gap-3">
@@ -26,7 +26,7 @@ export function ActiveRolePanel({
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[color:var(--muted-foreground)]">
             Active role
           </p>
-          <p className="mt-1 font-medium text-slate-950">{session.user.fullName}</p>
+          <p className="mt-1 font-medium text-[color:var(--foreground)]">{session.user.fullName}</p>
           <p className="text-sm text-[color:var(--muted-foreground)]">
             {session.user.role.toUpperCase()}
             {session.user.badgeNumber ? ` • ${session.user.badgeNumber}` : ""}

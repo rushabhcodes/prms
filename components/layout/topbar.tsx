@@ -3,6 +3,7 @@ import { ChevronDown, History } from "lucide-react";
 
 import { canViewAuditLogs } from "@/lib/auth/access";
 import { SignOutMenuItem } from "@/components/layout/sign-out-menu-item";
+import { DarkModeToggle } from "@/components/theme/dark-mode-toggle";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import {
   DropdownMenu,
@@ -28,19 +29,20 @@ export function Topbar({
   );
 
   return (
-    <header className="sticky top-0 z-30 border-b border-white/70 bg-white/70 backdrop-blur-xl">
+    <header className="sticky top-0 z-30 border-b border-[color:var(--border)] bg-[color:var(--card)]/90 backdrop-blur-xl">
       <div className="flex flex-col gap-4 px-4 py-4 lg:px-8">
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[color:var(--primary)]">
               Secure Workspace
             </p>
-            <h1 className="font-heading text-xl font-semibold text-slate-950">
+            <h1 className="font-heading text-xl font-semibold text-[color:var(--foreground)]">
               Police Record Management System
             </h1>
           </div>
 
           <div className="flex items-center gap-3">
+            <DarkModeToggle />
             <ThemeToggle />
 
             <DropdownMenu>

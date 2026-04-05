@@ -10,6 +10,7 @@ import {
   Users,
 } from "lucide-react";
 
+import { DarkModeToggle } from "@/components/theme/dark-mode-toggle";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -75,17 +76,18 @@ export default async function Home() {
       <div className="absolute inset-x-0 top-0 -z-10 h-[32rem] bg-[radial-gradient(circle_at_top_left,rgba(15,118,110,0.16),transparent_34%),radial-gradient(circle_at_top_right,rgba(14,165,233,0.18),transparent_24%)]" />
 
       <section className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8">
-        <header className="flex items-center justify-between gap-4 rounded-3xl border border-white/70 bg-white/75 px-5 py-4 shadow-sm backdrop-blur-xl">
+        <header className="flex items-center justify-between gap-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--card)]/90 px-5 py-4 shadow-sm backdrop-blur-xl">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--primary)]">
               Secure Workspace
             </p>
-            <h1 className="font-heading text-xl font-semibold text-slate-950">
+            <h1 className="font-heading text-xl font-semibold text-[color:var(--foreground)]">
               Police Record Management System
             </h1>
           </div>
 
           <div className="flex items-center gap-3">
+            <DarkModeToggle />
             <ThemeToggle />
             <Button variant="outline" asChild>
               <Link href="/login">Sign in</Link>
