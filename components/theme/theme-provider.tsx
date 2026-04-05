@@ -54,12 +54,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
 
     const storedMode = window.localStorage.getItem(modeStorageKey);
-
-    if (isColorMode(storedMode)) {
-      return storedMode;
-    }
-
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : defaultMode;
+    return isColorMode(storedMode) ? storedMode : defaultMode;
   });
 
   useEffect(() => {

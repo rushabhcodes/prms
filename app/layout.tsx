@@ -25,7 +25,7 @@ export default function RootLayout({
       <body className="min-h-full bg-[color:var(--background)] text-[color:var(--foreground)]">
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var storedTheme=window.localStorage.getItem(${JSON.stringify(themeStorageKey)});var storedMode=window.localStorage.getItem(${JSON.stringify(modeStorageKey)});document.documentElement.dataset.theme=storedTheme||${JSON.stringify(defaultTheme)};document.documentElement.dataset.mode=storedMode||((window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":${JSON.stringify(defaultMode)});}catch(e){document.documentElement.dataset.theme=${JSON.stringify(defaultTheme)};document.documentElement.dataset.mode=${JSON.stringify(defaultMode)};}`,
+            __html: `try{var storedTheme=window.localStorage.getItem(${JSON.stringify(themeStorageKey)});var storedMode=window.localStorage.getItem(${JSON.stringify(modeStorageKey)});document.documentElement.dataset.theme=storedTheme||${JSON.stringify(defaultTheme)};document.documentElement.dataset.mode=storedMode||${JSON.stringify(defaultMode)};}catch(e){document.documentElement.dataset.theme=${JSON.stringify(defaultTheme)};document.documentElement.dataset.mode=${JSON.stringify(defaultMode)};}`,
           }}
         />
         <ThemeProvider>
