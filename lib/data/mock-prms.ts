@@ -1,5 +1,7 @@
 import type {
   AuditLogRecord,
+  CriminalRecordDetailRecord,
+  CriminalRecordVersionRecord,
   CaseDetailRecord,
   CaseNoteRecord,
   CaseRecord,
@@ -195,21 +197,83 @@ export const mockCaseNotes: CaseNoteRecord[] = [
     id: "n1111111-1111-4111-8111-111111111111",
     note: "Assigned two field teams to collect CCTV footage from the warehouse perimeter.",
     createdAt: "2026-03-31T09:35:00.000Z",
+    createdById: mockUsers[1].id,
     createdByName: mockUsers[1].fullName,
   },
   {
     id: "n2222222-2222-4222-8222-222222222222",
     note: "Requested telecom metadata and flagged linked beneficiary accounts for review.",
     createdAt: "2026-04-01T14:20:00.000Z",
+    createdById: mockUsers[1].id,
     createdByName: mockUsers[1].fullName,
   },
   {
     id: "n3333333-3333-4333-8333-333333333333",
     note: "Closure memo prepared and shared with the insurance liaison desk.",
     createdAt: "2026-03-15T10:50:00.000Z",
+    createdById: mockUsers[0].id,
     createdByName: mockUsers[0].fullName,
   },
 ];
+
+export const mockCriminalRecordVersions: Record<string, CriminalRecordVersionRecord[]> = {
+  "c1111111-1111-4111-8111-111111111111": [
+    {
+      id: "v1111111-1111-4111-8111-111111111111",
+      version: 4,
+      decision: "pending",
+      note: null,
+      changedByName: mockUsers[1].fullName,
+      createdAt: "2026-04-03T06:30:00.000Z",
+      snapshotStatus: "pending",
+      snapshotOffenseSummary: mockCriminalRecords[0].offenseSummary,
+    },
+    {
+      id: "v1111111-1111-4111-8111-111111111112",
+      version: 3,
+      decision: "pending",
+      note: null,
+      changedByName: mockUsers[1].fullName,
+      createdAt: "2026-04-02T14:05:00.000Z",
+      snapshotStatus: "pending",
+      snapshotOffenseSummary: "Expanded payment-wallet links and intermediary account data.",
+    },
+  ],
+  "c2222222-2222-4222-8222-222222222222": [
+    {
+      id: "v2222222-2222-4222-8222-222222222221",
+      version: 7,
+      decision: "approved",
+      note: null,
+      changedByName: mockUsers[0].fullName,
+      createdAt: "2026-03-28T10:45:00.000Z",
+      snapshotStatus: "approved",
+      snapshotOffenseSummary: mockCriminalRecords[1].offenseSummary,
+    },
+    {
+      id: "v2222222-2222-4222-8222-222222222222",
+      version: 6,
+      decision: "pending",
+      note: null,
+      changedByName: mockUsers[1].fullName,
+      createdAt: "2026-03-27T15:20:00.000Z",
+      snapshotStatus: "pending",
+      snapshotOffenseSummary: "Known fence with links to dismantling sites under review.",
+    },
+  ],
+  "c3333333-3333-4333-8333-333333333333": [
+    {
+      id: "v3333333-3333-4333-8333-333333333331",
+      version: 2,
+      decision: "rejected",
+      note: null,
+      changedByName: mockUsers[0].fullName,
+      createdAt: "2026-03-31T14:20:00.000Z",
+      snapshotStatus: "rejected",
+      snapshotOffenseSummary: mockCriminalRecords[2].offenseSummary,
+    },
+  ],
+};
 
 export const mockAuditLogs: AuditLogRecord[] = [
   {
@@ -283,6 +347,36 @@ export function getMockCaseByNumber(caseNumber: string): CaseDetailRecord | null
     leadOfficerBadgeNumber: leadOfficer?.badgeNumber ?? null,
     leadOfficerStationName: leadOfficer?.stationName ?? null,
     notes,
+    activity,
+  };
+}
+
+export function getMockCriminalRecordById(recordId: string): CriminalRecordDetailRecord | null {
+  const record = mockCriminalRecords.find((item) => item.id === recordId);
+
+  if (!record) {
+    return null;
+  }
+
+  const createdBy = mockUsers[1] ?? null;
+  const lastReviewedBy = record.lastReviewedByName
+    ? mockUsers.find((user) => user.fullName === record.lastReviewedByName) ?? null
+    : null;
+  const versions = mockCriminalRecordVersions[record.id] ?? [];
+  const activity = mockAuditLogs
+    .filter((entry) => entry.entityType === "criminal_records" && entry.entityId === record.id)
+    .sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+
+  return {
+    ...record,
+    createdById: createdBy?.id ?? null,
+    createdByName: createdBy?.fullName ?? null,
+    createdByRole: createdBy?.role ?? null,
+    createdByBadgeNumber: createdBy?.badgeNumber ?? null,
+    createdByStationName: createdBy?.stationName ?? null,
+    lastReviewedByRole: lastReviewedBy?.role ?? null,
+    lastReviewedByBadgeNumber: lastReviewedBy?.badgeNumber ?? null,
+    versions,
     activity,
   };
 }

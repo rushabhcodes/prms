@@ -8,12 +8,14 @@ import {
   StickyNote,
 } from "lucide-react";
 
+import { BreadcrumbTrail } from "@/components/layout/breadcrumb-trail";
+import { CaseNotesManager } from "@/components/prms/case-notes-manager";
 import { PageHeader } from "@/components/layout/page-header";
 import { CasePriorityBadge, CaseStatusBadge } from "@/components/prms/badges";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { CaseDetailRecord } from "@/lib/types/prms";
+import type { AppRole, CaseDetailRecord } from "@/lib/types/prms";
 import { formatDate, formatDateTime, titleCase } from "@/lib/utils";
 
 function summarizeActivity(details: string) {
@@ -64,9 +66,38 @@ function SnapshotBlock({
   );
 }
 
-export function CaseDetailView({ caseItem }: { caseItem: CaseDetailRecord }) {
+export function CaseDetailView({
+  caseItem,
+  currentUserId,
+  currentUserRole,
+  canWrite,
+}: {
+  caseItem: CaseDetailRecord;
+  currentUserId: string;
+  currentUserRole: AppRole;
+  canWrite: boolean;
+}) {
   return (
     <div className="space-y-6">
+      <BreadcrumbTrail
+        items={
+          caseItem.firNumber
+            ? [
+                { label: "Dashboard", href: "/dashboard" },
+                { label: "FIRs", href: "/firs" },
+                {
+                  label: caseItem.firNumber,
+                  href: `/firs/${encodeURIComponent(caseItem.firNumber)}`,
+                },
+                { label: caseItem.caseNumber },
+              ]
+            : [
+                { label: "Dashboard", href: "/dashboard" },
+                { label: "Cases", href: "/cases" },
+                { label: caseItem.caseNumber },
+              ]
+        }
+      />
       <PageHeader
         eyebrow="Case File"
         title={caseItem.caseNumber}
@@ -119,41 +150,13 @@ export function CaseDetailView({ caseItem }: { caseItem: CaseDetailRecord }) {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Case notes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {caseItem.notes.length === 0 ? (
-                <p className="text-sm text-[color:var(--muted-foreground)]">
-                  No notes have been added to this case yet.
-                </p>
-              ) : (
-                <div className="space-y-4">
-                  {caseItem.notes.map((note) => (
-                    <div
-                      key={note.id}
-                      className="rounded-2xl border border-[color:var(--border)] bg-white/70 p-4"
-                    >
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                        <div className="space-y-2">
-                          <p className="font-medium text-slate-950">
-                            {note.createdByName ?? "Unknown author"}
-                          </p>
-                          <p className="text-sm leading-7 text-[color:var(--muted-foreground)]">
-                            {note.note}
-                          </p>
-                        </div>
-                        <p className="text-sm text-[color:var(--muted-foreground)]">
-                          {formatDateTime(note.createdAt)}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <CaseNotesManager
+            caseId={caseItem.id}
+            notes={caseItem.notes}
+            currentUserId={currentUserId}
+            currentUserRole={currentUserRole}
+            canWrite={canWrite}
+          />
 
           <Card>
             <CardHeader>

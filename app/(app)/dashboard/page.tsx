@@ -115,8 +115,15 @@ export default async function DashboardPage() {
                 <div key={record.id} className="rounded-2xl border border-[color:var(--border)] p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="font-medium">{record.suspectName}</p>
-                      <p className="text-sm text-[color:var(--muted-foreground)]">{record.offenseSummary}</p>
+                      <Link
+                        href={`/criminal-records/${record.id}`}
+                        className="font-medium text-slate-950 transition-colors hover:text-[color:var(--primary)]"
+                      >
+                        {record.suspectName}
+                      </Link>
+                      <p className="text-sm text-[color:var(--muted-foreground)]">
+                        {record.offenseSummary}
+                      </p>
                     </div>
                     <CriminalRecordStatusBadge status={record.status} />
                   </div>

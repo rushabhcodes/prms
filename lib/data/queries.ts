@@ -2,6 +2,7 @@ import "server-only";
 
 import {
   getMockCaseByNumber,
+  getMockCriminalRecordById,
   mockAuditLogs,
   mockCases,
   mockCriminalRecords,
@@ -14,8 +15,10 @@ import { hasSupabaseEnv } from "@/lib/supabase/env";
 import type {
   AuditLogRecord,
   CaseDetailRecord,
+  CriminalRecordDetailRecord,
   CaseRecord,
   CriminalRecord,
+  CriminalRecordVersionRecord,
   DashboardMetrics,
   FirDetailRecord,
   FirRecord,
@@ -491,6 +494,7 @@ export async function getCaseByNumber(caseNumber: string): Promise<CaseDetailRec
     id: row.id,
     note: row.note,
     createdAt: row.created_at,
+    createdById: row.created_by,
     createdByName: row.created_by ? userMap.get(row.created_by)?.fullName ?? null : null,
   }));
 
@@ -531,6 +535,119 @@ export async function getCaseByNumber(caseNumber: string): Promise<CaseDetailRec
     notesCount: notes.length,
     createdAt: caseRow.created_at,
     notes,
+    activity,
+  };
+}
+
+export async function getCriminalRecordById(
+  recordId: string,
+): Promise<CriminalRecordDetailRecord | null> {
+  if (!hasSupabaseEnv()) {
+    return getMockCriminalRecordById(recordId);
+  }
+
+  const supabase = await getRequiredSupabaseClient();
+  const users = await getUsers();
+  const userMap = buildUserMap(users);
+
+  const { data: recordRow, error: recordError } = await supabase
+    .from("criminal_records")
+    .select(
+      "id, suspect_name, national_id, offense_summary, status, version, created_at, last_reviewed_by, created_by",
+    )
+    .eq("id", recordId)
+    .maybeSingle();
+
+  if (recordError) {
+    failQuery("Failed to load criminal record detail", recordError.message);
+  }
+
+  if (!recordRow) {
+    return null;
+  }
+
+  const [versionsResult, auditResult] = await Promise.all([
+    supabase
+      .from("criminal_record_versions")
+      .select("id, version, snapshot, decision, note, changed_by, created_at")
+      .eq("criminal_record_id", recordRow.id)
+      .order("version", { ascending: false }),
+    supabase
+      .from("audit_logs")
+      .select("id, actor_id, entity_type, entity_id, action, details, created_at")
+      .eq("entity_type", "criminal_records")
+      .eq("entity_id", recordRow.id)
+      .order("created_at", { ascending: false })
+      .limit(20),
+  ]);
+
+  if (versionsResult.error) {
+    failQuery("Failed to load criminal record versions", versionsResult.error.message);
+  }
+
+  if (auditResult.error) {
+    failQuery("Failed to load criminal record activity", auditResult.error.message);
+  }
+
+  const versions: CriminalRecordVersionRecord[] = (versionsResult.data ?? []).map((row) => {
+    const snapshot =
+      row.snapshot && typeof row.snapshot === "object"
+        ? (row.snapshot as Record<string, unknown>)
+        : null;
+
+    return {
+      id: row.id,
+      version: row.version,
+      decision: row.decision,
+      note: row.note,
+      changedByName: row.changed_by ? userMap.get(row.changed_by)?.fullName ?? null : null,
+      createdAt: row.created_at,
+      snapshotStatus:
+        snapshot && typeof snapshot.status === "string"
+          ? (snapshot.status as CriminalRecord["status"])
+          : null,
+      snapshotOffenseSummary:
+        snapshot && typeof snapshot.offense_summary === "string"
+          ? snapshot.offense_summary
+          : null,
+    };
+  });
+
+  const activity: AuditLogRecord[] = (auditResult.data ?? []).map((row) => ({
+    id: row.id,
+    actorName: row.actor_id ? userMap.get(row.actor_id)?.fullName ?? null : null,
+    entityType: row.entity_type,
+    entityId: row.entity_id,
+    action: row.action,
+    details:
+      typeof row.details === "string"
+        ? row.details
+        : JSON.stringify(row.details ?? {}, null, 0),
+    createdAt: row.created_at,
+  }));
+
+  const createdBy = recordRow.created_by ? userMap.get(recordRow.created_by) ?? null : null;
+  const lastReviewedBy = recordRow.last_reviewed_by
+    ? userMap.get(recordRow.last_reviewed_by) ?? null
+    : null;
+
+  return {
+    id: recordRow.id,
+    suspectName: recordRow.suspect_name,
+    nationalId: recordRow.national_id,
+    offenseSummary: recordRow.offense_summary,
+    status: recordRow.status,
+    version: recordRow.version,
+    createdAt: recordRow.created_at,
+    lastReviewedByName: lastReviewedBy?.fullName ?? null,
+    createdById: recordRow.created_by,
+    createdByName: createdBy?.fullName ?? null,
+    createdByRole: createdBy?.role ?? null,
+    createdByBadgeNumber: createdBy?.badgeNumber ?? null,
+    createdByStationName: createdBy?.stationName ?? null,
+    lastReviewedByRole: lastReviewedBy?.role ?? null,
+    lastReviewedByBadgeNumber: lastReviewedBy?.badgeNumber ?? null,
+    versions,
     activity,
   };
 }

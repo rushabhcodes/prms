@@ -33,6 +33,15 @@ export const createCaseNoteSchema = z.object({
   note: z.string().min(8, "Notes should be at least 8 characters."),
 });
 
+export const updateCaseNoteSchema = z.object({
+  noteId: z.string().uuid(),
+  note: z.string().min(8, "Notes should be at least 8 characters."),
+});
+
+export const deleteCaseNoteSchema = z.object({
+  noteId: z.string().uuid(),
+});
+
 export const updateUserRoleSchema = z.object({
   userId: z.string().uuid(),
   role: z.enum(["admin", "officer", "viewer"]),
@@ -48,5 +57,7 @@ export type UpdateFirStatusValues = z.infer<typeof updateFirStatusSchema>;
 export type CreateCriminalRecordValues = z.infer<typeof createCriminalRecordSchema>;
 export type ReviewCriminalRecordValues = z.infer<typeof reviewCriminalRecordSchema>;
 export type CreateCaseNoteValues = z.infer<typeof createCaseNoteSchema>;
+export type UpdateCaseNoteValues = z.infer<typeof updateCaseNoteSchema>;
+export type DeleteCaseNoteValues = z.infer<typeof deleteCaseNoteSchema>;
 export type UpdateUserRoleValues = z.infer<typeof updateUserRoleSchema>;
 export type UpdateUserStatusValues = z.infer<typeof updateUserStatusSchema>;

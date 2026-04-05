@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 
@@ -107,7 +108,7 @@ export function CriminalRecordsView({
                 <TableHead>Version</TableHead>
                 <TableHead>Reviewed by</TableHead>
                 <TableHead>Created</TableHead>
-                {canReview ? <TableHead className="text-right">Actions</TableHead> : null}
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -115,7 +116,12 @@ export function CriminalRecordsView({
                 <TableRow key={record.id}>
                   <TableCell>
                     <div>
-                      <p className="font-medium">{record.suspectName}</p>
+                      <Link
+                        href={`/criminal-records/${record.id}`}
+                        className="font-medium text-slate-950 transition-colors hover:text-[color:var(--primary)]"
+                      >
+                        {record.suspectName}
+                      </Link>
                       <p className="max-w-md text-sm text-[color:var(--muted-foreground)]">
                         {record.offenseSummary}
                       </p>
@@ -128,18 +134,21 @@ export function CriminalRecordsView({
                   <TableCell>v{record.version}</TableCell>
                   <TableCell>{record.lastReviewedByName ?? "Awaiting review"}</TableCell>
                   <TableCell>{formatDate(record.createdAt)}</TableCell>
-                  {canReview ? (
-                    <TableCell className="text-right">
-                      {record.status === "pending" ? (
-                        <div className="flex justify-end gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              disabled={isPending}
-                              onClick={() => handleReview(record, "rejected")}
-                            >
-                              Reject
-                            </Button>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      <Button variant="outline" size="sm" asChild>
+                        <Link href={`/criminal-records/${record.id}`}>View details</Link>
+                      </Button>
+                      {canReview && record.status === "pending" ? (
+                        <>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={isPending}
+                            onClick={() => handleReview(record, "rejected")}
+                          >
+                            Reject
+                          </Button>
                           <Button
                             size="sm"
                             disabled={isPending}
@@ -147,14 +156,10 @@ export function CriminalRecordsView({
                           >
                             Approve
                           </Button>
-                        </div>
-                      ) : (
-                        <span className="text-sm text-[color:var(--muted-foreground)]">
-                          Review complete
-                        </span>
-                      )}
-                    </TableCell>
-                  ) : null}
+                        </>
+                      ) : null}
+                    </div>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

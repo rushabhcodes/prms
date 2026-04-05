@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 
 import { CaseDetailView } from "@/components/prms/case-detail-view";
+import { canWriteRecords } from "@/lib/auth/access";
 import { getSessionContext } from "@/lib/auth/session";
 import { getCaseByNumber } from "@/lib/data/queries";
 
@@ -24,5 +25,12 @@ export default async function CaseDetailPage({
     notFound();
   }
 
-  return <CaseDetailView caseItem={caseItem} />;
+  return (
+    <CaseDetailView
+      caseItem={caseItem}
+      currentUserId={session.user.id}
+      currentUserRole={session.user.role}
+      canWrite={canWriteRecords(session.user.role)}
+    />
+  );
 }

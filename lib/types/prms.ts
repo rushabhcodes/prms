@@ -59,6 +59,29 @@ export interface CriminalRecord {
   lastReviewedByName: string | null;
 }
 
+export interface CriminalRecordVersionRecord {
+  id: string;
+  version: number;
+  decision: string | null;
+  note: string | null;
+  changedByName: string | null;
+  createdAt: string;
+  snapshotStatus: CriminalRecordStatus | null;
+  snapshotOffenseSummary: string | null;
+}
+
+export interface CriminalRecordDetailRecord extends CriminalRecord {
+  createdById: string | null;
+  createdByName: string | null;
+  createdByRole: AppRole | null;
+  createdByBadgeNumber: string | null;
+  createdByStationName: string | null;
+  lastReviewedByRole: AppRole | null;
+  lastReviewedByBadgeNumber: string | null;
+  versions: CriminalRecordVersionRecord[];
+  activity: AuditLogRecord[];
+}
+
 export interface CaseRecord {
   id: string;
   caseNumber: string;
@@ -76,6 +99,7 @@ export interface CaseNoteRecord {
   id: string;
   note: string;
   createdAt: string;
+  createdById: string | null;
   createdByName: string | null;
 }
 

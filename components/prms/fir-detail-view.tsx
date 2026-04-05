@@ -9,6 +9,7 @@ import {
   UserRound,
 } from "lucide-react";
 
+import { BreadcrumbTrail } from "@/components/layout/breadcrumb-trail";
 import { PageHeader } from "@/components/layout/page-header";
 import { CasePriorityBadge, CaseStatusBadge, FirStatusBadge } from "@/components/prms/badges";
 import { Badge } from "@/components/ui/badge";
@@ -69,6 +70,13 @@ function SummaryMetric({
 export function FirDetailView({ fir }: { fir: FirDetailRecord }) {
   return (
     <div className="space-y-6">
+      <BreadcrumbTrail
+        items={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "FIRs", href: "/firs" },
+          { label: fir.firNumber },
+        ]}
+      />
       <PageHeader
         eyebrow="FIR File"
         title={fir.firNumber}
