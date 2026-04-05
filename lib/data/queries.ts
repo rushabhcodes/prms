@@ -104,7 +104,9 @@ export async function getUsers(): Promise<UserProfile[]> {
     failQuery("Failed to load user profiles", error?.message);
   }
 
-  return data.map((row) => ({
+  const userRows = data ?? [];
+
+  return userRows.map((row) => ({
     id: row.id,
     email: row.email,
     fullName: row.full_name,
@@ -137,8 +139,9 @@ export async function getFirs(): Promise<FirRecord[]> {
   }
 
   const userMap = buildUserMap(users);
+  const firRows = firsResult.data ?? [];
 
-  return firsResult.data.map((row) => ({
+  return firRows.map((row) => ({
     id: row.id,
     firNumber: row.fir_number,
     title: row.title,
@@ -352,8 +355,9 @@ export async function getCriminalRecords(): Promise<CriminalRecord[]> {
   }
 
   const userMap = buildUserMap(users);
+  const recordRows = recordsResult.data ?? [];
 
-  return recordsResult.data.map((row) => ({
+  return recordRows.map((row) => ({
     id: row.id,
     suspectName: row.suspect_name,
     nationalId: row.national_id,
@@ -397,12 +401,13 @@ export async function getCases(): Promise<CaseRecord[]> {
   const userMap = buildUserMap(users);
   const firMap = new Map(firs.map((fir) => [fir.id, fir]));
   const noteCountMap = new Map<string, number>();
+  const caseRows = casesResult.data ?? [];
 
   notesResult.data?.forEach((note) => {
     noteCountMap.set(note.case_id, (noteCountMap.get(note.case_id) ?? 0) + 1);
   });
 
-  return casesResult.data.map((row) => ({
+  return caseRows.map((row) => ({
     id: row.id,
     caseNumber: row.case_number,
     firNumber: row.fir_id ? firMap.get(row.fir_id)?.firNumber ?? null : null,
@@ -677,8 +682,9 @@ export async function getAuditLogs(): Promise<AuditLogRecord[]> {
   }
 
   const userMap = buildUserMap(users);
+  const logRows = logsResult.data ?? [];
 
-  return logsResult.data.map((row) => ({
+  return logRows.map((row) => ({
     id: row.id,
     actorName: row.actor_id ? userMap.get(row.actor_id)?.fullName ?? null : null,
     entityType: row.entity_type,
