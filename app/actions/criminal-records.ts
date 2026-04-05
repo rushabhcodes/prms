@@ -12,6 +12,8 @@ import {
   reviewCriminalRecordSchema,
   type CreateCriminalRecordValues,
   type ReviewCriminalRecordValues,
+  type UpdateCriminalRecordValues,
+  updateCriminalRecordSchema,
 } from "@/lib/validations/prms";
 
 export async function createCriminalRecordAction(
@@ -120,5 +122,72 @@ export async function reviewCriminalRecordAction(
   return {
     success: true,
     message: `Record ${parsed.data.decision}.`,
+  };
+}
+
+export async function updateCriminalRecordAction(
+  values: UpdateCriminalRecordValues,
+): Promise<ActionResult> {
+  const parsed = updateCriminalRecordSchema.safeParse(values);
+
+  if (!parsed.success) {
+    return {
+      success: false,
+      message: parsed.error.issues[0]?.message ?? "Unable to update record.",
+    };
+  }
+
+  const session = await getSessionContext();
+
+  if (!session || !canWriteRecords(session.user.role)) {
+    return {
+      success: false,
+      message: "You do not have permission to update criminal records.",
+    };
+  }
+
+  if (!hasSupabaseEnv()) {
+    return {
+      success: true,
+      message: "Demo mode does not persist criminal record changes.",
+    };
+  }
+
+  const supabase = await createServerSupabaseClient();
+
+  const { data: updatedRecord, error } = await supabase!
+    .from("criminal_records")
+    .update({
+      suspect_name: parsed.data.suspectName,
+      national_id: parsed.data.nationalId,
+      offense_summary: parsed.data.offenseSummary,
+      status: "pending",
+      last_reviewed_by: null,
+      version: parsed.data.version + 1,
+    })
+    .eq("id", parsed.data.id)
+    .eq("version", parsed.data.version)
+    .select("id")
+    .maybeSingle();
+
+  if (error) {
+    return { success: false, message: error.message };
+  }
+
+  if (!updatedRecord) {
+    return {
+      success: false,
+      message:
+        "This record changed before your edits were applied. Refresh and try again.",
+    };
+  }
+
+  revalidatePath("/criminal-records");
+  revalidatePath("/dashboard");
+  revalidatePath(`/criminal-records/${parsed.data.id}`);
+
+  return {
+    success: true,
+    message: "Criminal record updated and returned to pending review.",
   };
 }

@@ -410,9 +410,11 @@ export async function getCases(): Promise<CaseRecord[]> {
     summary: row.summary,
     priority: row.priority,
     status: row.status,
+    leadOfficerId: row.lead_officer_id,
     leadOfficerName: row.lead_officer_id
       ? userMap.get(row.lead_officer_id)?.fullName ?? null
       : null,
+    createdById: null,
     notesCount: noteCountMap.get(row.id) ?? 0,
     createdAt: row.created_at,
   }));
@@ -430,7 +432,7 @@ export async function getCaseByNumber(caseNumber: string): Promise<CaseDetailRec
   const { data: caseRow, error: caseError } = await supabase
     .from("cases")
     .select(
-      "id, case_number, fir_id, title, summary, priority, status, lead_officer_id, created_at",
+      "id, case_number, fir_id, title, summary, priority, status, lead_officer_id, created_by, created_at",
     )
     .eq("case_number", caseNumber)
     .maybeSingle();
@@ -528,10 +530,12 @@ export async function getCaseByNumber(caseNumber: string): Promise<CaseDetailRec
     summary: caseRow.summary,
     priority: caseRow.priority,
     status: caseRow.status,
+    leadOfficerId: caseRow.lead_officer_id,
     leadOfficerName: leadOfficer?.fullName ?? null,
     leadOfficerEmail: leadOfficer?.email ?? null,
     leadOfficerBadgeNumber: leadOfficer?.badgeNumber ?? null,
     leadOfficerStationName: leadOfficer?.stationName ?? null,
+    createdById: caseRow.created_by,
     notesCount: notes.length,
     createdAt: caseRow.created_at,
     notes,

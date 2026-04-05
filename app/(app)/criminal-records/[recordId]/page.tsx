@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 
 import { CriminalRecordDetailView } from "@/components/prms/criminal-record-detail-view";
-import { canReviewRecords } from "@/lib/auth/access";
+import { canReviewRecords, canWriteRecords } from "@/lib/auth/access";
 import { getSessionContext } from "@/lib/auth/session";
 import { getCriminalRecordById } from "@/lib/data/queries";
 
@@ -25,10 +25,16 @@ export default async function CriminalRecordDetailPage({
     notFound();
   }
 
+  const canEditRecord =
+    canWriteRecords(session.user.role) &&
+    (session.user.role === "admin" ||
+      (session.user.role === "officer" && record.createdById === session.user.id));
+
   return (
     <CriminalRecordDetailView
       record={record}
       canReview={canReviewRecords(session.user.role)}
+      canEdit={canEditRecord}
     />
   );
 }

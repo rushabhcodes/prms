@@ -10,13 +10,14 @@ import {
 } from "lucide-react";
 
 import { BreadcrumbTrail } from "@/components/layout/breadcrumb-trail";
+import { FirEditDialog } from "@/components/prms/fir-edit-dialog";
 import { PageHeader } from "@/components/layout/page-header";
 import { CasePriorityBadge, CaseStatusBadge, FirStatusBadge } from "@/components/prms/badges";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import type { FirDetailRecord } from "@/lib/types/prms";
+import type { FirDetailRecord, UserProfile } from "@/lib/types/prms";
 import { formatDate, formatDateTime, titleCase } from "@/lib/utils";
 
 function summarizeActivity(details: string) {
@@ -67,7 +68,17 @@ function SummaryMetric({
   );
 }
 
-export function FirDetailView({ fir }: { fir: FirDetailRecord }) {
+export function FirDetailView({
+  fir,
+  officers,
+  canEdit,
+  canReassign,
+}: {
+  fir: FirDetailRecord;
+  officers: UserProfile[];
+  canEdit: boolean;
+  canReassign: boolean;
+}) {
   return (
     <div className="space-y-6">
       <BreadcrumbTrail
@@ -82,12 +93,20 @@ export function FirDetailView({ fir }: { fir: FirDetailRecord }) {
         title={fir.firNumber}
         description={fir.title}
         action={
-          <Button variant="outline" asChild>
-            <Link href="/firs">
-              <ArrowLeft className="h-4 w-4" />
-              Back to FIRs
-            </Link>
-          </Button>
+          <div className="flex flex-wrap items-center gap-3">
+            <FirEditDialog
+              fir={fir}
+              officers={officers}
+              canEdit={canEdit}
+              canReassign={canReassign}
+            />
+            <Button variant="outline" asChild>
+              <Link href="/firs">
+                <ArrowLeft className="h-4 w-4" />
+                Back to FIRs
+              </Link>
+            </Button>
+          </div>
         }
       />
 

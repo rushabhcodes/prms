@@ -90,7 +90,9 @@ export interface CaseRecord {
   summary: string;
   priority: CasePriority;
   status: CaseStatus;
+  leadOfficerId?: string | null;
   leadOfficerName: string | null;
+  createdById?: string | null;
   notesCount: number;
   createdAt: string;
 }

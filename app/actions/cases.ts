@@ -10,9 +10,11 @@ import type { ActionResult } from "@/lib/types/prms";
 import {
   createCaseNoteSchema,
   deleteCaseNoteSchema,
+  updateCaseSchema,
   updateCaseNoteSchema,
   type CreateCaseNoteValues,
   type DeleteCaseNoteValues,
+  type UpdateCaseValues,
   type UpdateCaseNoteValues,
 } from "@/lib/validations/prms";
 
@@ -58,6 +60,63 @@ export async function createCaseNoteAction(
   revalidatePath("/firs");
 
   return { success: true, message: "Case note added." };
+}
+
+export async function updateCaseAction(values: UpdateCaseValues): Promise<ActionResult> {
+  const parsed = updateCaseSchema.safeParse(values);
+
+  if (!parsed.success) {
+    return {
+      success: false,
+      message: parsed.error.issues[0]?.message ?? "Unable to update case.",
+    };
+  }
+
+  const session = await getSessionContext();
+
+  if (!session || !canWriteRecords(session.user.role)) {
+    return {
+      success: false,
+      message: "You do not have permission to update cases.",
+    };
+  }
+
+  if (!hasSupabaseEnv()) {
+    return { success: true, message: "Demo mode does not persist case changes." };
+  }
+
+  const supabase = await createServerSupabaseClient();
+
+  const { data, error } = await supabase!
+    .from("cases")
+    .update({
+      title: parsed.data.title,
+      summary: parsed.data.summary,
+      priority: parsed.data.priority,
+      status: parsed.data.status,
+      lead_officer_id: parsed.data.leadOfficerId,
+    })
+    .eq("id", parsed.data.caseId)
+    .select("id, case_number")
+    .maybeSingle();
+
+  if (error) {
+    return { success: false, message: error.message };
+  }
+
+  if (!data) {
+    return {
+      success: false,
+      message: "Only admins, lead officers, or creators can edit this case.",
+    };
+  }
+
+  revalidatePath("/cases");
+  revalidatePath("/dashboard");
+  revalidatePath("/firs");
+  revalidatePath(`/cases/${encodeURIComponent(data.case_number)}`);
+
+  return { success: true, message: "Case details updated." };
 }
 
 export async function updateCaseNoteAction(

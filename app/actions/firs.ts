@@ -9,8 +9,10 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { ActionResult } from "@/lib/types/prms";
 import {
   createFirSchema,
+  updateFirDetailsSchema,
   updateFirStatusSchema,
   type CreateFirValues,
+  type UpdateFirDetailsValues,
   type UpdateFirStatusValues,
 } from "@/lib/validations/prms";
 
@@ -112,4 +114,64 @@ export async function updateFirStatusAction(
   revalidatePath("/dashboard");
 
   return { success: true, message: "FIR status updated." };
+}
+
+export async function updateFirDetailsAction(
+  values: UpdateFirDetailsValues,
+): Promise<ActionResult> {
+  const parsed = updateFirDetailsSchema.safeParse(values);
+
+  if (!parsed.success) {
+    return {
+      success: false,
+      message: parsed.error.issues[0]?.message ?? "Invalid FIR update.",
+    };
+  }
+
+  const session = await getSessionContext();
+
+  if (!session || !canWriteRecords(session.user.role)) {
+    return {
+      success: false,
+      message: "You do not have permission to update FIR details.",
+    };
+  }
+
+  if (!hasSupabaseEnv()) {
+    return { success: true, message: "Demo mode does not persist FIR changes." };
+  }
+
+  const supabase = await createServerSupabaseClient();
+
+  const { data, error } = await supabase!
+    .from("firs")
+    .update({
+      title: parsed.data.title,
+      description: parsed.data.description,
+      incident_date: parsed.data.incidentDate,
+      location: parsed.data.location,
+      complainant_name: parsed.data.complainantName,
+      status: parsed.data.status,
+      assigned_officer_id: parsed.data.assignedOfficerId,
+    })
+    .eq("id", parsed.data.firId)
+    .select("id, fir_number")
+    .maybeSingle();
+
+  if (error) {
+    return { success: false, message: error.message };
+  }
+
+  if (!data) {
+    return {
+      success: false,
+      message: "Only admins, assignees, or creators can edit this FIR.",
+    };
+  }
+
+  revalidatePath("/firs");
+  revalidatePath("/dashboard");
+  revalidatePath(`/firs/${encodeURIComponent(data.fir_number)}`);
+
+  return { success: true, message: "FIR details updated." };
 }

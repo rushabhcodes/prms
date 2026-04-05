@@ -20,6 +20,12 @@ export function formatDateTime(input: string) {
   }).format(new Date(input));
 }
 
+export function toDateTimeLocalValue(input: string) {
+  const date = new Date(input);
+  const offsetMs = date.getTimezoneOffset() * 60_000;
+  return new Date(date.getTime() - offsetMs).toISOString().slice(0, 16);
+}
+
 export function titleCase(value: string) {
   return value
     .replace(/_/g, " ")

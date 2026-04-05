@@ -9,13 +9,14 @@ import {
 } from "lucide-react";
 
 import { BreadcrumbTrail } from "@/components/layout/breadcrumb-trail";
+import { CaseEditDialog } from "@/components/prms/case-edit-dialog";
 import { CaseNotesManager } from "@/components/prms/case-notes-manager";
 import { PageHeader } from "@/components/layout/page-header";
 import { CasePriorityBadge, CaseStatusBadge } from "@/components/prms/badges";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { AppRole, CaseDetailRecord } from "@/lib/types/prms";
+import type { AppRole, CaseDetailRecord, UserProfile } from "@/lib/types/prms";
 import { formatDate, formatDateTime, titleCase } from "@/lib/utils";
 
 function summarizeActivity(details: string) {
@@ -68,14 +69,20 @@ function SnapshotBlock({
 
 export function CaseDetailView({
   caseItem,
+  officers,
   currentUserId,
   currentUserRole,
   canWrite,
+  canEditCase,
+  canReassignLead,
 }: {
   caseItem: CaseDetailRecord;
+  officers: UserProfile[];
   currentUserId: string;
   currentUserRole: AppRole;
   canWrite: boolean;
+  canEditCase: boolean;
+  canReassignLead: boolean;
 }) {
   return (
     <div className="space-y-6">
@@ -103,12 +110,20 @@ export function CaseDetailView({
         title={caseItem.caseNumber}
         description={caseItem.title}
         action={
-          <Button variant="outline" asChild>
-            <Link href="/cases">
-              <ArrowLeft className="h-4 w-4" />
-              Back to Cases
-            </Link>
-          </Button>
+          <div className="flex flex-wrap items-center gap-3">
+            <CaseEditDialog
+              caseItem={caseItem}
+              officers={officers}
+              canEdit={canEditCase}
+              canReassign={canReassignLead}
+            />
+            <Button variant="outline" asChild>
+              <Link href="/cases">
+                <ArrowLeft className="h-4 w-4" />
+                Back to Cases
+              </Link>
+            </Button>
+          </div>
         }
       />
 

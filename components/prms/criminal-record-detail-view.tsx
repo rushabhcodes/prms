@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 
 import { BreadcrumbTrail } from "@/components/layout/breadcrumb-trail";
+import { CriminalRecordEditDialog } from "@/components/prms/criminal-record-edit-dialog";
 import { PageHeader } from "@/components/layout/page-header";
 import { CriminalRecordReviewControls } from "@/components/prms/criminal-record-review-controls";
 import { CriminalRecordStatusBadge } from "@/components/prms/badges";
@@ -65,9 +66,11 @@ function SnapshotMetric({
 export function CriminalRecordDetailView({
   record,
   canReview,
+  canEdit,
 }: {
   record: CriminalRecordDetailRecord;
   canReview: boolean;
+  canEdit: boolean;
 }) {
   return (
     <div className="space-y-6">
@@ -84,12 +87,15 @@ export function CriminalRecordDetailView({
         title={record.suspectName}
         description={record.nationalId}
         action={
-          <Button variant="outline" asChild>
-            <Link href="/criminal-records">
-              <ArrowLeft className="h-4 w-4" />
-              Back to Records
-            </Link>
-          </Button>
+          <div className="flex flex-wrap items-center gap-3">
+            <CriminalRecordEditDialog record={record} canEdit={canEdit} />
+            <Button variant="outline" asChild>
+              <Link href="/criminal-records">
+                <ArrowLeft className="h-4 w-4" />
+                Back to Records
+              </Link>
+            </Button>
+          </div>
         }
       />
 

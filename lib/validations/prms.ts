@@ -16,6 +16,17 @@ export const updateFirStatusSchema = z.object({
   status: z.enum(["draft", "pending", "under_investigation", "closed"]),
 });
 
+export const updateFirDetailsSchema = z.object({
+  firId: z.string().uuid(),
+  title: z.string().min(4, "Title is required."),
+  description: z.string().min(12, "Description must be at least 12 characters."),
+  incidentDate: z.string().min(1, "Incident date is required."),
+  location: z.string().min(3, "Location is required."),
+  complainantName: z.string().min(3, "Complainant name is required."),
+  status: z.enum(["draft", "pending", "under_investigation", "closed"]),
+  assignedOfficerId: z.string().uuid("Assigned officer is required."),
+});
+
 export const createCriminalRecordSchema = z.object({
   suspectName: z.string().min(3, "Suspect name is required."),
   nationalId: z.string().min(4, "National ID is required."),
@@ -31,6 +42,23 @@ export const reviewCriminalRecordSchema = z.object({
 export const createCaseNoteSchema = z.object({
   caseId: z.string().uuid(),
   note: z.string().min(8, "Notes should be at least 8 characters."),
+});
+
+export const updateCaseSchema = z.object({
+  caseId: z.string().uuid(),
+  title: z.string().min(4, "Case title is required."),
+  summary: z.string().min(12, "Summary must be at least 12 characters."),
+  priority: z.enum(["low", "medium", "high"]),
+  status: z.enum(["open", "in_progress", "pending_review", "closed"]),
+  leadOfficerId: z.string().uuid("Lead officer is required."),
+});
+
+export const updateCriminalRecordSchema = z.object({
+  id: z.string().uuid(),
+  version: z.int().positive(),
+  suspectName: z.string().min(3, "Suspect name is required."),
+  nationalId: z.string().min(4, "National ID is required."),
+  offenseSummary: z.string().min(12, "Offense summary must be at least 12 characters."),
 });
 
 export const updateCaseNoteSchema = z.object({
@@ -54,9 +82,12 @@ export const updateUserStatusSchema = z.object({
 
 export type CreateFirValues = z.infer<typeof createFirSchema>;
 export type UpdateFirStatusValues = z.infer<typeof updateFirStatusSchema>;
+export type UpdateFirDetailsValues = z.infer<typeof updateFirDetailsSchema>;
 export type CreateCriminalRecordValues = z.infer<typeof createCriminalRecordSchema>;
 export type ReviewCriminalRecordValues = z.infer<typeof reviewCriminalRecordSchema>;
+export type UpdateCriminalRecordValues = z.infer<typeof updateCriminalRecordSchema>;
 export type CreateCaseNoteValues = z.infer<typeof createCaseNoteSchema>;
+export type UpdateCaseValues = z.infer<typeof updateCaseSchema>;
 export type UpdateCaseNoteValues = z.infer<typeof updateCaseNoteSchema>;
 export type DeleteCaseNoteValues = z.infer<typeof deleteCaseNoteSchema>;
 export type UpdateUserRoleValues = z.infer<typeof updateUserRoleSchema>;
