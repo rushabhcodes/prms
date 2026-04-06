@@ -275,6 +275,14 @@ Recommended starter users:
 
 You can add `full_name` in `raw_user_meta_data`, but it is optional because the trigger creates fallback profile names.
 
+For local/testing setup, these credentials are currently used:
+
+- `admin@department.gov` / `admin@1233`
+- `officer@department.gov` / `officer@123`
+- `viewer@department.gov` / `viewer@123`
+
+Change these passwords before using the project in any shared or production-like environment.
+
 ## 6. Seed Starter Data
 
 Run [seed.sql](/home/rushabh/Dev/prms/supabase/seed.sql) in Supabase SQL Editor after the Auth users exist.
@@ -311,6 +319,12 @@ http://localhost:3000
 
 Use one of the Supabase Auth users you created.
 
+Current local/testing accounts:
+
+- `admin@department.gov` / `admin@1233`
+- `officer@department.gov` / `officer@123`
+- `viewer@department.gov` / `viewer@123`
+
 ## First-Time Supabase Walkthrough
 
 If you want the quickest end-to-end setup:
@@ -323,6 +337,10 @@ If you want the quickest end-to-end setup:
 6. run [seed.sql](/home/rushabh/Dev/prms/supabase/seed.sql)
 7. optionally run [seed-more.sql](/home/rushabh/Dev/prms/supabase/seed-more.sql)
 8. run `npm run dev`
+9. sign in with one of:
+   - `admin@department.gov` / `admin@1233`
+   - `officer@department.gov` / `officer@123`
+   - `viewer@department.gov` / `viewer@123`
 
 ## Demo Mode
 
